@@ -122,6 +122,6 @@ springdoc.api-docs.path=/api-docs
 ```
 - Acessar especificação: http://localhost:8080/api-docs
 
-  ### observação
+### observação
 Todos os créditos pelo conteúdo deste README bem elaborado são atribuídos à devSuperior."
 
