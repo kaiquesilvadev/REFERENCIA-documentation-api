@@ -17,15 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.devsuperior.dsmovie.dto.CustomErrorDTO;
+import com.devsuperior.dsmovie.config.swagger.SwaggerAnnotationMovie;
 import com.devsuperior.dsmovie.dto.MovieDTO;
 import com.devsuperior.dsmovie.services.MovieService;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -37,40 +32,19 @@ public class MovieController {
 	@Autowired
 	private MovieService service;
 
-	@Operation(
-		    description = "Get all movies",
-		    summary = "Get all movies",
-		    responses = {
-		         @ApiResponse(description = "ok", responseCode = "200"),
-		    })
+	@SwaggerAnnotationMovie.FindAllSwagger
 	@GetMapping(produces = "application/json")
 	public Page<MovieDTO> findAll(Pageable pageable) {
 		return service.findAll(pageable);
 	}
 
-	@Operation(
-		    description = "Get movies by id",
-		    summary = "Get movies by id",
-		    responses = {
-		         @ApiResponse(description = "ok", responseCode = "200"),
-		         @ApiResponse(description = "Not found", responseCode = "404")
-		    })
+	@SwaggerAnnotationMovie.FindByIdSwagger
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public MovieDTO findById(@PathVariable Long id) {
 		return service.findById(id);
 	}
-	
-	@Operation(
-		    description = "Create a new movie",
-		    summary = "Create a new movie",
-		    responses = {
-		         @ApiResponse(description = "Created", responseCode = "201"),
-		         @ApiResponse(description = "Bad Request", responseCode = "400"),
-		         @ApiResponse(description = "Unauthorized", responseCode = "401"),
-		         @ApiResponse(description = "Forbidden", responseCode = "403"),
-		         @ApiResponse(description = "Unprocessable Entity", responseCode = "422" )
-		    })
-	@SecurityRequirement(name = "bearerAuth")// Indica autenticação utilizando o esquema "Bearer Token"
+
+	@SwaggerAnnotationMovie.InsertSwagger
 	@PostMapping(produces = "application/json")
 	public ResponseEntity<MovieDTO> insert(@Valid @RequestBody MovieDTO dto) {
 		dto = service.insert(dto);
@@ -78,37 +52,15 @@ public class MovieController {
 		return ResponseEntity.created(uri).body(dto);
 	}
 
-
-	@Operation(
-		    description = "update a movie",
-		    summary = "update a movie",
-		    responses = {
-		    	 @ApiResponse(description = "ok", responseCode = "200"),
-		         @ApiResponse(description = "Not found", responseCode = "404", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorDTO.class))),
-		         @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorDTO.class))),
-		         @ApiResponse(description = "Forbidden", responseCode = "403", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorDTO.class))),
-		         @ApiResponse(description = "Unprocessable Entity", responseCode = "422" , content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorDTO.class))),
-		    })
-	@SecurityRequirement(name = "bearerAuth")// Indica autenticação utilizando o esquema "Bearer Token"
+	@SwaggerAnnotationMovie.updateSwagger
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@PutMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<MovieDTO> update(@PathVariable Long id, @Valid @RequestBody MovieDTO dto) {
 		dto = service.update(id, dto);
 		return ResponseEntity.ok().body(dto);
 	}
-	
-	
-	@Operation(
-		    description = "update a movie",
-		    summary = "update a movie",
-		    responses = {
-		    	 @ApiResponse(description = "No content", responseCode = "204"),
-		         @ApiResponse(description = "Not found", responseCode = "404"),
-		         @ApiResponse(description = "Bad Request", responseCode = "400"),
-		         @ApiResponse(description = "Unauthorized", responseCode = "401"),
-		         @ApiResponse(description = "Forbidden", responseCode = "403"),
-		    })
-	@SecurityRequirement(name = "bearerAuth")// Indica autenticação utilizando o esquema "Bearer Token"
+
+	@SwaggerAnnotationMovie.deleteSwagger
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@DeleteMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<MovieDTO> delete(@PathVariable Long id) {
